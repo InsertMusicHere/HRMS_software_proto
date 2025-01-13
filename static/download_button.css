@@ -1,0 +1,180 @@
+.button_download_class {
+    position: relative;
+    background: #444;
+    color: #fff;
+    text-decoration: none;
+    text-transform: uppercase;
+    border: none;
+    letter-spacing: 0.1rem;
+    font-size: 1rem;
+    padding: 1rem 3rem;
+    transition: 0.2s;
+}
+  
+.button_download_class:hover {
+    letter-spacing: 0.2rem;
+    padding: 1.1rem 3.1rem;
+    background: var(--clr);
+    color: var(--clr);
+    /* box-shadow: 0 0 35px var(--clr); */
+    animation: box 3s infinite;
+}
+  
+.button_download_class::before {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    background: #000000;
+}
+  
+.button_download_class span {
+    position: relative;
+    z-index: 1;
+}
+
+.button_download_class i {
+    position: absolute;
+    inset: 0;
+    display: block;
+}
+  
+.button_download_class i::before {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 2px;
+    left: 80%;
+    top: -2px;
+    border: 2px solid var(--clr);
+    background: #272822;
+    transition: 0.2s;
+}
+  
+.button_download_class:hover i::before {
+    width: 15px;
+    left: 20%;
+    animation: move 3s infinite;
+}
+  
+.button_download_class i::after {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 2px;
+    left: 20%;
+    bottom: -2px;
+    border: 2px solid var(--clr);
+    background: #272822;
+    transition: 0.2s;
+}
+  
+.button_download_class:hover i::after {
+    width: 15px;
+    left: 80%;
+    animation: move 3s infinite;
+}
+  
+@keyframes move {
+    0% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(5px);
+    }
+    100% {
+      transform: translateX(0);
+    }
+}
+  
+@keyframes box {
+    0% {
+      box-shadow: #27272c;
+    }
+    50% {
+      box-shadow: 0 0 25px var(--clr);
+    }
+    100% {
+      box-shadow: #27272c;
+    }
+}
+  
+
+
+/* CSS */
+
+/* For button which will open proration */
+.container_button-pro {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 5vh; /* Set the height of the container to the viewport height to center vertically */
+}
+
+.button-pro {
+  /* Your existing button styles */
+  all: unset;
+  width: 100px;
+  height: 30px;
+  font-size: 16px;
+  background: transparent;
+  border: none;
+  position: relative;
+  color: #f0f0f0;
+  cursor: pointer;
+  z-index: 1;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.button-pro::after,
+.button-pro::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: -99999;
+  transition: all .4s;
+}
+
+.button-pro::before {
+  transform: translate(0%, 0%);
+  width: 100%;
+  height: 100%;
+  /* background: #28282d; */
+  background: #5858af;
+  border-radius: 10px;
+}
+
+.button-pro::after {
+  transform: translate(10px, 10px);
+  width: 35px;
+  height: 35px;
+  background: #2e3e8115;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border-radius: 50px;
+}
+
+.button-pro:hover::before {
+  transform: translate(5%, 20%);
+  width: 110%;
+  height: 110%;
+}
+
+.button-pro:hover::after {
+  border-radius: 10px;
+  transform: translate(0, 0);
+  width: 100%;
+  height: 100%;
+}
+
+.button-pro:active::after {
+  transition: 0s;
+  transform: translate(0, 5%);
+}

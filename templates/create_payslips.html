@@ -1,0 +1,191 @@
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Payslips</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='attendance.css') }}">
+    <link rel="stylesheet" href="../static/leaves.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../static/nav_button.css">
+    <link rel="stylesheet" href="../static/download_button.css">
+    <style>
+        .container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .input {
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            padding: 5px;
+            font-size: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <style>
+        .input {
+            width: 100%; /* Set the width to 100% */
+            box-sizing: border-box; /* Ensure the width includes padding and border */
+            margin-bottom: 10px; /* Add some spacing between the input fields */
+            padding: 5px; /* Add padding to the input fields */
+            font-size: 16px; /* Set the font size for the input fields */
+        }
+    </style>
+
+    <div class="container">
+        <h1 style="margin: 10px;">Create Payslip</h1>
+        {% if is_admin %}
+            <div>
+                <form method="post"> <!-- Change the method to "post" -->
+                    <label for="company_name" style="width: 30%;box-sizing: border-box;margin-bottom: 10px;padding: 5px;font-size: 16px;">Company Name:</label>
+                    <input type="text" name="company_name" required class="input" style="width: 30%;box-sizing: border-box;margin-bottom: 10px;padding: 5px;font-size: 16px;"><br>
+
+                    <label for="address"style="width: 30%;box-sizing: border-box;margin-bottom: 10px;padding: 5px;font-size: 16px;">Address:</label>
+                    <input type="text" name="address" required class="input" style="width: 30%;box-sizing: border-box;margin-bottom: 10px;padding: 5px;font-size: 16px;"><br>
+
+                    <label for="employee_id" style="width: 30%;box-sizing: border-box;margin-bottom: 10px;padding: 5px;font-size: 16px;">Employee ID:</label>
+                    <input type="text" name="employee_id" required class="input" style="width: 30%;box-sizing: border-box;margin-bottom: 10px;padding: 5px;font-size: 16px;"><br>
+
+                    <label for="month_year" style="width: 30%;box-sizing: border-box;margin-bottom: 10px;padding: 5px;font-size: 16px;">Month and Year</label>
+                    <input type="text" name="month_year" required class="input" style="width: 30%;box-sizing: border-box;margin-bottom: 10px;padding: 5px;font-size: 16px;"><br>
+                    
+                    <button type="submit" style="margin: 10px;" style="width: 30%;box-sizing: border-box;padding: 5px;font-size: 16px;">Generate Payslip</button>
+                    <button type="button" onclick="generateAllPayslips()" style="margin: 10px;">Generate All Payslips</button>
+                </form>
+            </div>
+
+        {% else %}
+            <p>Oops! You don't have the rights to access this page.</p>
+        {% endif %}
+
+        {% if pdf_data %}
+            <div class="card card-body">
+                <embed src="data:application/pdf;base64,{{ pdf_data }}" width="100%" height="500px">
+            </div>
+            <div style="margin-top: 30px;" class="btn btn-dark" >
+                <a href="data:application/pdf;base64,{{ pdf_data }}" download="payslip.pdf">Download Payslip</a>
+            </div>
+        {% endif %}
+    </div>
+    
+    <script>
+        function generateAllPayslips() {
+            var companyName = document.getElementsByName("company_name")[0].value;
+            var address = document.getElementsByName("address")[0].value;
+            var month_year_js = document.getElementsByName("month_year")[0].value;
+            console.log(month_year_js)
+    
+            // Redirect to the generate_all_payslips route with query parameters
+            window.location.href = "/generate_all_payslips?company_name=" + companyName + "&address=" + address + "&month_year=" + month_year_js;
+        }
+    </script>
+
+    <!-- <div class="container" style="text-align: center;margin-top: 30px;">
+        <h1>Create Payslip</h1>
+        <style>
+            .input {
+                width: 100%; /* Set the width to 100% */
+                box-sizing: border-box; /* Ensure the width includes padding and border */
+                margin-bottom: 10px; /* Add some spacing between the input fields */
+                padding: 5px; /* Add padding to the input fields */
+                font-size: 16px; /* Set the font size for the input fields */
+            }
+        </style>
+        {% if is_admin %}
+            <div>
+                <form method="post">
+                    <label for="company_name" style="width: 30%;box-sizing: border-box;margin-bottom: 10px;padding: 5px;font-size: 16px;">Company Name:</label>
+                    <input type="text" name="company_name" required style="width: 30%;box-sizing: border-box;margin-bottom: 10px;padding: 5px;font-size: 16px;"><br>
+                    <label for="address" style="width: 30%;box-sizing: border-box;margin-bottom: 10px;padding: 5px;font-size: 16px;">Address:</label>
+                    <input type="text" name="address" required style="width: 30%;box-sizing: border-box;margin-bottom: 10px;padding: 5px;font-size: 16px;"><br>
+                    <label for="employee_id" style="width: 30%;box-sizing: border-box;margin-bottom: 10px;padding: 5px;font-size: 16px;">Employee ID:</label>
+                    <input type="text" name="employee_id" required style="width: 30%;box-sizing: border-box;margin-bottom: 10px;padding: 5px;font-size: 16px;"><br>
+                    <button type="submit" style="margin-top: 10px;margin-bottom: 10px;">Generate Payslip</button>
+                </form>
+            </div>
+
+            <div>
+                <form method="get">
+                    <input type="hidden" name="company_name" value="{{ company_name }}">
+                    <input type="hidden" name="address" value="{{ address }}">
+
+        
+                    <button type="submit">Generate All Payslips</button>
+                </form>
+            </div>
+            
+            
+        {% else %}
+            <p>Oops! You don't have the rights to access this page.</p>
+        {% endif %}
+        
+    
+        
+        {% if pdf_data %}
+            <div class="card card-body">
+                <embed src="data:application/pdf;base64,{{ pdf_data }}" width="100%" height="500px">
+            </div>
+            <div style="margin-top: 30px;">
+                <a href="data:application/pdf;base64,{{ pdf_data }}" download="payslip.pdf">Download Payslip</a>
+            </div>
+            
+        {% endif %}
+        
+
+        
+        
+    </div> -->
+
+    <div class="container_nav" style="margin: 20px;margin-bottom: 50px;">
+        <br>
+        <br>
+        <div class="menu_nav" onclick="this.classList.toggle('open')">
+
+            <div class="button_nav" onclick="redirectToLoggedIn()"></div>
+            <script>
+                function redirectToLoggedIn() {
+                    window.location.href = '/logged_in';
+                }
+            </script>
+
+            <div class="button_nav" onclick="redirectToLogout()" style="background: url('../static/logout.svg') no-repeat 50%/ 50% #e8e8f3;"></div>
+            <script>
+                function redirectToLogout() {
+                    window.location.href = '/logout';
+                }
+            </script>
+
+            <!-- <div class="button_nav" onclick="redirectToLeave()"></div>
+            <script>
+                function redirectToLeave() {
+                    window.location.href = '/leaves';
+                }
+            </script> -->
+        </div>
+    </div>
+
+    
+
+</body>
+</html>
+
+
+{% endblock %}

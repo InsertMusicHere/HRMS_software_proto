@@ -1,0 +1,248 @@
+
+{% block content %}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attendance Calendar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='../static/attendance.css') }}">
+    <link rel="stylesheet" href="../static/attendance.css">
+    <link rel="stylesheet" href="../static/nav_button.css">
+    <link rel="stylesheet" href="../static/download_button.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+</head>
+<body>
+    <div class="text-center" style="font-size:40px;font-weight: bold;margin-bottom: 30px;font-family:sans-serif;margin-top: 90px;">
+        <p>Attendance Calendar</p>
+        <p id="clockInTime">{% if clockInTime %}{{ clockInTime }}{% endif %}</p>
+    </div>
+    <div class="calendar" style="margin-top: 80px;">
+        <div class="calendar-header">
+            <button onclick="prevMonth()"><i class="fas fa-chevron-left"></i></button>
+            <h2 id="month-year"></h2>
+            <button onclick="nextMonth()"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <div class="calendar-stats">
+            <p>Number of days in month: <span id="days-in-month">0</span></p>
+            <p>Number of days the user was present: <span id="days-present">0</span></p>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Sun</th>
+                    <th>Mon</th>
+                    <th>Tue</th>
+                    <th>Wed</th>
+                    <th>Thu</th>
+                    <th>Fri</th>
+                    <th>Sat</th>
+                </tr>
+            </thead>
+            <tbody id="calendar-body">
+                <!-- Calendar days will be populated here dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- <div class="container_download_button">
+        <button id="download-btn" type="button" class="btn btn-primary">Download My Attendance Data</button>
+    </div> -->
+    <div class="container" style="text-align: center;">
+        <button style="--clr:#39FF14" id="download-btn" class="button_download_class"><span>Download My Attendance Data</span><i></i></button>
+    </div>
+    
+
+
+
+    <div class="container_nav">
+        <div class="menu_nav" onclick="this.classList.toggle('open')">
+
+            <div class="button_nav" onclick="redirectToLoggedIn()"></div>
+            <script>
+                function redirectToLoggedIn() {
+                    window.location.href = '/logged_in';
+                }
+            </script>
+
+            <div class="button_nav" onclick="redirectToLogout()"></div>
+            <script>
+                function redirectToLogout() {
+                    window.location.href = '/logout';
+                }
+            </script>
+
+            <div class="button_nav" onclick="redirectToLeave()"></div>
+            <script>
+                function redirectToLeave() {
+                    window.location.href = '/logged_in';
+                }
+            </script>
+        </div>
+    </div>
+
+    
+
+    <script>
+        const today = new Date();
+        let currentMonth = today.getMonth();
+        let currentYear = today.getFullYear();
+        const username = "{{ username }}";
+    
+        function displayCalendar(month, year) {
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            const firstDayOfWeek = firstDay.getDay();
+    
+            const daysInMonth = lastDay.getDate();
+            const calendarBody = document.getElementById("calendar-body");
+            calendarBody.innerHTML = "";
+    
+            document.getElementById("month-year").innerText = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date(year, month));
+    
+            let date = 1;
+            for (let week = 0; week < 6; week++) {
+                const row = document.createElement("tr");
+                for (let dayOfWeek = 0; dayOfWeek < 7; dayOfWeek++) {
+                    if (week === 0 && dayOfWeek < firstDayOfWeek) {
+                        const cell = document.createElement("td");
+                        row.appendChild(cell);
+                    } else if (date > daysInMonth) {
+                        break;
+                    } else {
+                        const cell = document.createElement("td");
+                        cell.innerText = date;
+                        const dateString = new Date(Date.UTC(year, month, date)).toISOString().split('T')[0];
+                        cell.setAttribute("data-date", dateString);
+                        row.appendChild(cell);
+                        date++;
+                    }
+                }
+                calendarBody.appendChild(row);
+            }
+    
+            applyAttendanceData();
+        }
+    
+        function prevMonth() {
+            currentMonth--;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear--;
+            }
+            displayCalendar(currentMonth, currentYear);
+        }
+    
+        function nextMonth() {
+            currentMonth++;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear++;
+            }
+            displayCalendar(currentMonth, currentYear);
+        }
+
+        
+
+        let attendanceData = {};
+    
+        // ... Your existing code ...
+
+        // ... Your existing code ...
+
+        function applyAttendanceData() {
+            fetch('/get_attendance_data')
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Attendance Data:", data); // Debugging statement
+                    attendanceData = data;
+                    updateStats();
+
+                    const cells = document.querySelectorAll("td[data-date]");
+                    const today = new Date().toISOString().split('T')[0];
+                    const weeklyOff = "{{ weekly_off }}"; // Ensure that weekly_off is fetched from Jinja template
+
+                    console.log("Weekly Off:", weeklyOff); // Debugging statement
+
+                    cells.forEach(cell => {
+                        const date = cell.getAttribute("data-date");
+                        console.log("Cell Date:", date); // Debugging statement
+                        if (data[date]) {
+                            console.log("Cell Marked Green: ", date); // Debugging statement
+                            cell.style.backgroundColor = "#00CC99"; // Mark present with green
+                        } else if (date < today) {
+                            console.log("Cell Marked Red: ", date); // Debugging statement
+                            cell.style.backgroundColor = "#Eb4F61"; // Mark past dates without data as red
+                        } else {
+                            console.log("Cell Reset: ", date); // Debugging statement
+                            cell.style.backgroundColor = ""; // Reset background color for future dates without data
+                        }
+
+                        const dayOfWeek = new Date(date).getDay();
+                        console.log("Day of Week:", dayOfWeek); // Debugging statement
+
+                        if (weeklyOff === "sat_sun_off" && (dayOfWeek === 6 || dayOfWeek === 0)) {
+                            console.log("Setting Null Color for Weekly Off Day:", date); // Debugging statement
+                            cell.style.backgroundColor = ""; // Set background color to null for weekly off days
+                        } else if (weeklyOff === "mon_tue_off" && (dayOfWeek === 1 || dayOfWeek === 2)) {
+                            console.log("Setting Null Color for Weekly Off Day:", date); // Debugging statement
+                            cell.style.backgroundColor = ""; // Set background color to null for weekly off days
+                        }
+                    });
+
+                    updateStats(); // Add this line to update the stats after fetching the attendance data
+                })
+                .catch(error => console.error('Error fetching attendance data:', error));
+        }
+
+        // ... Your existing code ...
+
+
+    function updateStats() {
+        const cells = document.querySelectorAll("td[data-date]");
+        const daysInMonth = cells.length;
+        let daysPresent = 0;
+
+        cells.forEach(cell => {
+            const date = cell.getAttribute("data-date");
+            const dayData = attendanceData[date]; // Use the global attendanceData variable here
+            if (dayData) {
+                daysPresent++;
+            }
+        });
+
+        document.getElementById("days-in-month").innerText = daysInMonth;
+        document.getElementById("days-present").innerText = daysPresent;
+    }
+    
+        displayCalendar(currentMonth, currentYear); // Display the calendar on page load
+    
+        
+    </script>
+
+    <script>
+        // Add a click event listener to the download button
+        document.getElementById('download-btn').addEventListener('click', function() {
+            // Make an AJAX request to the "/download_attendance_data" route
+            fetch('/download_attendance_data')
+                .then(response => response.blob())
+                .then(blob => {
+                    // Create a temporary link to trigger the download
+                    const url = window.URL.createObjectURL(new Blob([blob]));
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'attendance_data.csv';
+                    a.click();
+
+                    // Clean up the temporary URL
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch(error => console.error('Error downloading attendance data:', error));
+        });
+    </script>
+    
+</body>
+</html>
+
+{% endblock %}

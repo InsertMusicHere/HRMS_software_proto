@@ -1,0 +1,309 @@
+{% block content %}
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Leaves</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='attendance.css') }}">
+    <link rel="stylesheet" href="../static/leaves.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../static/nav_button.css">
+    <link rel="stylesheet" href="../static/download_button.css">
+    <style>
+        /* Custom CSS for carousel controls */
+        .carousel-control-prev,
+        .carousel-control-next {
+            /* Existing styles */
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 0, 0, 0.2); /* You can adjust the background color here */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 5px; /* Add margin to create space between the controls */
+            transition: 1s;
+            background: transparent;
+        }
+    
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            /* Existing styles */
+            color: white; /* You can adjust the arrow color here */
+            font-size: 16px; /* You can adjust the arrow size here */
+            
+        }
+    
+        /* Custom CSS for collapsible button */
+        .collapsible-btn {
+            margin-bottom: 10px; /* Add margin to create space between the collapsible button and the carousel controls */
+        }
+    </style>
+
+</head>
+<body>
+
+    <div class="text-center" style="font-size:40px;font-weight: bold;margin-bottom: 10px;font-family:sans-serif;margin-top: 60px;">
+        <p>Request Time Off</p>
+        <p id="clockInTime">{% if clockInTime %}{{ clockInTime }}{% endif %}</p>
+    </div>
+    
+
+    <div class="leave-cards-container" style="margin-top: 5px;">
+        <div class="leave-card">
+            <h3 style="text-align: center;">Casual Leave</h3>
+            <p style="text-align: center;">Available: <span id="casual-leave-balance">{{ casual_leave_balance }}</span></p>
+        </div>
+        <div class="leave-card">
+            <h3 style="text-align: center;">Emergency Leave</h3>
+            <p style="text-align: center;">Available: <span id="emergency-leave-balance">{{ emergency_leave_balance }}</span></p>
+        </div>
+        <div class="leave-card">
+            <h3 style="text-align: center;">Medical Leave</h3>
+            <p style="text-align: center;">Available: <span id="medical-leave-balance">{{ medical_leave_balance }}</span></p>
+        </div>
+    </div>
+
+    <!-- Form for applying leave -->
+    <div class="row-cols-2">
+
+        <div class="apply-leave-card">
+            <h3>Apply for Leave</h3>
+            <form action="/apply_leave" method="post">
+                <label for="leave-type">Leave Type:</label>
+                <select name="leave-type" id="leave-type">
+                    <option value="casual_leave">Casual Leave</option>
+                    <option value="emergency_leave">Emergency Leave</option>
+                    <option value="medical_leave">Medical Leave</option>
+                </select>
+    
+                <label for="start-date">Start Date:</label>
+                <input type="date" name="start-date" id="start-date" required>
+    
+                <label for="end-date">End Date:</label>
+                <input type="date" name="end-date" id="end-date" required>
+    
+                <div  class="container">
+                    <div class="row">
+                        <div class="col-sm">
+                            <label for="half-day">Half Day:</label>
+                        </div>
+                        <div class="col-sm">
+                            <input type="checkbox" name="half-day" id="half-day" style="text-align: center;">
+                        </div>
+                    </div>
+                </div>
+                
+    
+                <button type="submit" style="background-color: #5c95ff;">Apply</button>
+            </form>
+            
+        </div>
+    
+        <!-- Collapsible row for leave approval -->
+        <!-- Modify the 'apply-leave-approval' section in your leaves.html template -->
+    
+        <!-- Apply Leave Approval Carousel -->
+        <div class="apply-leave-approval">
+            <div class="container">
+                {% if pending_leaves %}
+                <h6>Leaves pending for your approval</h6>
+                <div id="leaveCarousel" class="carousel slide" data-bs-ride="carousel" style="padding: 2px;">
+                    <div class="carousel-inner">
+                        {% for leave in pending_leaves %}
+                        <div class="carousel-item {% if loop.index == 1 %}active{% endif %}">
+                            <div class="collapsible-row">
+                                <button type="button" class="collapsible-btn" data-bs-toggle="collapse" data-bs-target="#leaveDetails{{ loop.index }}" style="background-color: #5c95ff;">Leave Application #{{ loop.index }}</button>
+                                <div id="leaveDetails{{ loop.index }}" class="content collapse">
+                                    <p>Leave For : {{ email }}</p>
+                                    <p>Leave Type: {{ leave.leave_type }}</p>
+                                    <p>Start Date: {{ leave.start_date }}</p>
+                                    <p>End Date: {{ leave.end_date }}</p>
+                                    <div class="approve-decline-buttons">
+                                        <button class="approve-btn btn btn-primary" data-leave-id="{{ leave._id }}" style="background-color: #5c95ff;">Approve</button>
+                                        <button class="decline-btn btn btn-danger" data-leave-id="{{ leave._id }}" style="background-color: #5c95ff;">Decline</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#leaveCarousel" data-bs-slide="prev" style="padding: 1px;">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#leaveCarousel" data-bs-slide="next" style="padding: 1px;">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+                {% else %}
+                <div class="container" style="text-align: center;">
+                    <h6>There are no pending leaves</h6>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if message_leave  %}
+            <div class="alert alert-secondary" role="alert">
+                <p>{{ message_leave }}</p>
+            </div>
+            {% endif %}
+
+        </div>
+
+        
+    </div>
+    
+    <div class="container" style="text-align: center;margin-top: 25px;">
+        <button style="--clr:#39FF14" id="download-btn" class="button_download_class"><span>Download My Leave Data</span><i></i></button>
+    </div>
+    
+    <div class="container_nav" style="margin-bottom: 50px;">
+        <div class="menu_nav" onclick="this.classList.toggle('open')">
+
+            <div class="button_nav" onclick="redirectToLoggedIn()"></div>
+            <script>
+                function redirectToLoggedIn() {
+                    window.location.href = '/logged_in';
+                }
+            </script>
+
+            <div class="button_nav" onclick="redirectToLogout()" style="background: url('../static/logout.svg') no-repeat 50%/ 50% #e8e8f3;"></div>
+            <script>
+                function redirectToLogout() {
+                    window.location.href = '/logout';
+                }
+            </script>
+
+            <!-- <div class="button_nav" onclick="redirectToLeave()"></div>
+            <script>
+                function redirectToLeave() {
+                    window.location.href = '/leaves';
+                }
+            </script> -->
+        </div>
+        
+    </div>
+    
+    <script>
+        const alertError = () => {
+            const errorMessage = document.getElementById('error-message').value;
+            if (errorMessage) {
+                alert(errorMessage);
+            }
+        }
+        window.onload = alertError;
+
+    </script>
+    <script>
+        // Add this JavaScript code to display the flash messages
+        const successMessage = '{{ get_flashed_messages(category_filter=["success"]) | first }}';
+        const errorMessage = '{{ get_flashed_messages(category_filter=["error"]) | first }}';
+        
+        if (successMessage) {
+            alert(successMessage);
+        } else if (errorMessage) {
+            alert(errorMessage);
+        }
+    </script>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <script>
+        // Add this JavaScript code to handle button clicks for approval and rejection
+        const approveButtons = document.querySelectorAll('.approve-btn');
+        const declineButtons = document.querySelectorAll('.decline-btn');
+    
+        approveButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const leaveId = button.getAttribute('data-leave-id');
+                approveLeave(leaveId);
+            });
+        });
+    
+        declineButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const leaveId = button.getAttribute('data-leave-id');
+                declineLeave(leaveId);
+            });
+        });
+    
+        function approveLeave(leaveId) {
+            const formData = new FormData();
+            formData.append('leave_id', leaveId);
+    
+            fetch('/approve_leave', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    alert('Failed to approve leave.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    
+        function declineLeave(leaveId) {
+            const formData = new FormData();
+            formData.append('leave_id', leaveId);
+    
+            fetch('/decline_leave', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    alert('Failed to decline leave.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+
+    <script>
+        // Add a click event listener to the download button
+        document.getElementById('download-btn').addEventListener('click', function() {
+            // Make an AJAX request to the "/download_attendance_data" route
+            fetch('/download_leave_data')
+                .then(response => response.blob())
+                .then(blob => {
+                    // Create a temporary link to trigger the download
+                    const url = window.URL.createObjectURL(new Blob([blob]));
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'leave_data.csv';
+                    a.click();
+
+                    // Clean up the temporary URL
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch(error => console.error('Error downloading leave data:', error));
+        });
+    </script>
+    
+        
+</body>
+
+
+{% endblock %}

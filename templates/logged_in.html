@@ -1,0 +1,249 @@
+{% extends "base_2.html" %}
+{% block title %}Youv'e Logged In {% endblock %}
+
+{% block content %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="../static/logged_in.css">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"
+    crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../static/navbar.css">
+    <link rel="stylesheet" href="../static/nav_button.css">
+    <title>Document</title>
+</head>
+<body>
+
+    <!-- Navbar-->
+    <header style="background-color: white;">
+        <nav>
+          <div class="logo">
+            <img src="../static/assets/logo2.png" alt="Logo" style="size: 40px;">
+          </div>
+          <div class="menu">
+            <!-- <ul>
+              <li><a href="#">Home</a></li>
+              <li><a href="#">About</a></li>
+              <li><a href="#">Contact</a></li>
+            </ul> -->
+          </div>
+          <div class="profile">
+            <img src="../static/assets/{{ profile_picture }}" alt="Profile Picture">
+            <!-- <div class="profile-menu">
+                <ul>
+                    <li><a href="#">Edit Profile</a></li>
+                    <li><a href="#">Logout</a></li>
+                    <li><a href="javascript:void(0);" onclick="chooseFile()">Choose File</a></li>
+                    <li><a href="javascript:void(0);" onclick="uploadProfilePicture()">Upload Profile Picture</a></li>
+                    <li><a href="javascript:void(0);" onclick="deleteProfilePicture()">Delete Profile Picture</a></li>
+                </ul>
+                <form action="{{ url_for('upload_profile_picture') }}" method="post" enctype="multipart/form-data" id="uploadForm" style="display: none;">
+                    <input type="file" name="profile_picture" id="fileInput" style="display: none;">
+                </form>
+                <form action="{{ url_for('delete_profile_picture') }}" method="post" id="deleteForm" style="display: none;">
+                </form>
+            </div>         -->
+        </div>
+        </nav>
+      </header>
+
+      <br>
+      <br>
+
+      
+      <script src="../scripts/script.js"></script>
+      <script>
+        function chooseFile() {
+            document.getElementById('fileInput').click();
+        }
+
+        function uploadProfilePicture() {
+            document.getElementById('uploadForm').submit();
+        }
+
+        function deleteProfilePicture() {
+            document.getElementById('deleteForm').submit();
+        }
+    </script>
+    
+    
+
+    
+    
+    <div class="container-fluid">
+        
+        <div class="text-center" style="font-size:40px;font-weight: bold;margin-bottom: 30px;font-family:sans-serif;margin-top: 0;">
+            <p>Welcome, {{ email }}!</p>
+            <p id="clockInTime">{% if clockInTime %}{{ clockInTime }}{% endif %}</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-sm">
+                <div class="container">
+                    <div class="card">
+                        <div class="face face1">
+                            <div class="content">
+                                <div class="icon">
+                                    <i class="fa fa-calendar" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="face face2">
+                            <div class="content">
+                                <h3>
+                                    <a href="/get_attendance">Attendance</a>
+                                </h3>
+                                <p>Log your attendance, revoke it and much more!</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="face face1">
+                            <div class="content">
+                                <div class="icon">
+                                    <i class="fa fa-plane" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="face face2">
+                            <div class="content">
+                                <h3>
+                                    <a href="/leaves">Leave</a>
+                                </h3>
+                                <p>Planning to go on a vaction? or take a sandiwch leave?</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="face face1">
+                            <div class="content">
+                                <div class="icon">
+                                    <i class="fa fa-money" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="face face2">
+                            <div class="content">
+                                <h3>
+                                    <a href="/compensation">Compensation</a>
+                                </h3>
+                                <p>Is it month end already?</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="container-fluid" style="margin: 25px;">
+
+    </div>
+    <div class="container-fluid">
+        <!-- Second row -->
+        {% if is_admin %}
+        <div class="row">
+            <div class="col-sm">
+                <div class="container">
+                    <div class="card">
+                        <div class="face face1">
+                            <div class="content">
+                                <div class="icon">
+                                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="face face2">
+                            <div class="content">
+                                <h3>
+                                    <a href="/create_payslips">Create and Print Payslips</a>
+                                </h3>
+                                <p>Generate a single PDF or download in bulk</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="container_nav" style="margin-bottom: 70px;">
+        <div class="menu_nav" onclick="this.classList.toggle('open')">
+
+            <div class="button_nav_logged_in" onclick="redirectToClockIn()"></div>
+            <script>
+                function redirectToClockIn() {
+                // Check if the user has already clocked in today
+                const lastClockInDate = localStorage.getItem('lastClockInDate');
+                const currentDate = new Date().toISOString().split('T')[0];
+
+                if (lastClockInDate === currentDate) {
+                    // User has already clocked in today, show an alert and do nothing
+                    alert('You have already clocked in today. Please clock out before clocking in again.');
+                    return;
+                }
+
+                fetch('/clock_in', {
+                    method: 'POST',
+                })
+                .then(response => response.text())
+                .then(clockInTime => {
+                    // Handle the response, if needed
+                    console.log(clockInTime);
+                    // Get the current time
+                    const currentTime = new Date().toLocaleTimeString();
+                    // Show an alert with the current time
+                    alert(`Logged in at: ${currentTime}`);
+                    // Update the lastClockInDate in localStorage
+                    localStorage.setItem('lastClockInDate', currentDate);
+                    // You can redirect to another page if desired, for example:
+                    // window.location.href = '/some_other_route';
+                })
+                .catch(error => console.error('Error clocking in:', error));
+            }
+            </script>
+
+            <div class="button_nav_logged_in" onclick="redirectToLogout()"></div>
+            <script>
+                function redirectToLogout() {
+                    window.location.href = '/logout';
+                }
+            </script>
+
+            <div class="button_nav_logged_in" onclick="redirectToClockOut()"></div>
+            <script>
+                function redirectToClockOut() {
+                    fetch('/clock_out', {
+                        method: 'POST',
+                    })
+                    .then(response => response.text())
+                    .then(clockOutTime => {
+                        // Handle the response, if needed
+                        console.log(clockOutTime);
+                        // Get the current time
+                        const currentTime = new Date().toLocaleTimeString();
+                        // Show an alert with the current time
+                        alert(`Logged out at : ${currentTime}`);
+                        // You can redirect to another page if desired, for example:
+                        // window.location.href = '/some_other_route';
+                    })
+                    .catch(error => console.error('Error clocking out:', error));
+                }
+
+                // Add a click event listener to the clockOutButton
+                const clockOutButton = document.getElementById('clockOutButton');
+                clockOutButton.addEventListener('click', redirectToClockOut);
+            </script>
+
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+
+
+{% endblock %}

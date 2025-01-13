@@ -1,0 +1,104 @@
+{% block content %}
+<html lang="en">
+<head>
+    <head>
+        <title>Compensation</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='../static/attendance.css') }}">
+        <link rel="stylesheet" href="../static/attendance.css">
+        <link rel="stylesheet" href="../static/nav_button.css">
+        <link rel="stylesheet" href="../static/download_button.css">
+        <link rel="stylesheet" href="../static/cop_table.css">
+        <link rel="stylesheet" href="../static/ctcpro.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    </head>
+</head>
+<body>
+
+    
+    <!-- Inside the <body> tag of compensation.html -->
+    <div class="container" style="text-align: center;margin-top: 100px;">
+
+        <div class="text-center" style="margin-top: 20px;">
+            <p>Hello You have Logged in as {{ email }}</p>
+            
+        </div>
+
+        <!-- Add the table below the "Hello You have Logged in as {{ email }}" div -->
+        <div class="container" style="margin-top: 20px;">
+            <h2>Compensation Data</h2>
+            <br>
+            <table class="table-responsive-sm">
+                <thead>
+                    <tr>
+                        <th style="text-align: center;">Components</th>
+                        {% if data %}
+                        {% for _ in data %}
+                        <th style="text-align: center;">Annual</th>
+                        {% endfor %}
+                        <th style="text-align: center;">Monthly</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for key in list_c %}
+                    <tr>
+                        <td>{{ key }}</td>
+                        {% if data %}
+                        {% for record in data %}
+                        {% if key in record %}
+                        <td>{{ record[key] }}</td>
+                        <td>
+                            {% if record[key] is number %}
+                            {{ (record[key]/12) | round | int }}
+                            {% else %}
+                            N/A
+                            {% endif %}
+                        </td>
+                        {% endif %}
+                        {% endfor %}
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <div class="container_nav">
+        <br>
+        <br>
+        <div class="menu_nav" onclick="this.classList.toggle('open')">
+
+            <div class="button_nav" onclick="redirectToLoggedIn()"></div>
+            <script>
+                function redirectToLoggedIn() {
+                    window.location.href = '/logged_in';
+                }
+            </script>
+
+            <div class="button_nav" onclick="redirectToLogout()" style="background: url('../static/logout.svg') no-repeat 50%/ 50% #e8e8f3;"></div>
+            <script>
+                function redirectToLogout() {
+                    window.location.href = '/logout';
+                }
+            </script>
+
+            <!-- <div class="button_nav" onclick="redirectToLeave()"></div>
+            <script>
+                function redirectToLeave() {
+                    window.location.href = '/leaves';
+                }
+            </script> -->
+        </div>
+    </div>
+
+    
+
+   
+
+
+</body>
+</html>
+{% endblock %}

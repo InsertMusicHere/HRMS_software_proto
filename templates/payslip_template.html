@@ -1,0 +1,29 @@
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* Add your CSS styles here */
+    </style>
+</head>
+<body>
+    <h1>{{ company_name }}</h1>
+    <p>{{ address }}</p>
+    
+    <table>
+        <tr>
+            <th>Components</th>
+            <th>Annual</th>
+            <th>Monthly</th>
+        </tr>
+        {% for column in list_c %}
+        <tr>
+            <td>{{ column }}</td>
+            <td>{{ data[column] }}</td>
+            <td>{{ (data[column] / 12) | round | int }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
+{% endblock %}

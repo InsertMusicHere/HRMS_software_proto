@@ -1,0 +1,93 @@
+/* body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+} */
+
+header {
+background-color: #333;
+padding: 10px;
+}
+
+nav {
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+.logo img {
+height: 40px;
+}
+
+.menu ul {
+list-style: none;
+margin: 0;
+padding: 0;
+display: flex;
+}
+
+.menu ul li {
+margin-right: 20px;
+}
+
+.menu ul li a {
+text-decoration: none;
+color: #fff;
+}
+
+.profile {
+display: flex;
+align-items: center;
+}
+
+.profile img {
+height: 40px;
+border-radius: 50%;
+margin-right: 10px;
+cursor: pointer;
+position: relative;
+}
+
+.profile .profile-menu {
+position:relative;
+top: 40px;
+right: 0;
+background-color: #fff;
+border: 1px solid #ccc;
+border-radius: 5px;
+padding: 10px;
+display: none;
+margin-right: 10px;
+}
+
+.profile:hover .profile-menu {
+display: block;
+}
+
+
+.profile-menu ul {
+list-style: none;
+margin: 0;
+padding: 0;
+}
+
+.profile-menu ul li {
+margin-bottom: 10px;
+}
+
+.profile-menu ul li a {
+text-decoration: none;
+color: #333;
+}
+
+.content {
+padding: 20px;
+}
+
+.clock-buttons {
+margin-right: 10px;
+}
+
+.clock-buttons button {
+margin-right: 10px;
+}

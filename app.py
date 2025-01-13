@@ -24,8 +24,8 @@ from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer,  Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 
-username_in_mongo = 'saumitra27'
-password_in_mongo = 'Saumitra@27'
+username_in_mongo = ''
+password_in_mongo = ''
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -35,8 +35,8 @@ app.secret_key = 'your_secret_key'
 # db = client['your_database_name']
 # users_collection = db['users']
 
-client = pymongo.MongoClient("mongodb+srv://"+username_in_mongo+":"+ urllib.parse.quote(password_in_mongo) + "@dbox.frvr4k3.mongodb.net/?retryWrites=true&w=majority")
-cluster = "mongodb+srv://"+username_in_mongo+":"+ urllib.parse.quote(password_in_mongo) + "@dbox.frvr4k3.mongodb.net/?retryWrites=true&w=majority"
+client = pymongo.MongoClient("mongodb+srv://"+username_in_mongo+":"+ urllib.parse.quote(password_in_mongo) + "@.frvr4k3.mongodb.net/?retryWrites=true&w=majority")
+cluster = "mongodb+srv://"+username_in_mongo+":"+ urllib.parse.quote(password_in_mongo) + "@.frvr4k3.mongodb.net/?retryWrites=true&w=majority"
 db = client.get_database('Dbox_database')
 users_collection = db['employee_zero']
 clock_collection = db['clock']
